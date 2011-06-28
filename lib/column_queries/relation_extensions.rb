@@ -22,8 +22,8 @@ module ColumnQueries::RealtionExtensions
     hash
   end
   
-  def to_ints_hash(key_column, value_column)
-    keys, values = to_columns_as_int_arrays(key_column, value_column)
+  def to_ints_hash(keys_column, values_column)
+    keys, values = to_columns_as_int_arrays(keys_column, values_column)
     Hash[keys.zip(values)]
   end
 end
