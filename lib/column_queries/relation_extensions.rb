@@ -9,20 +9,20 @@ module ColumnQueries::RealtionExtensions
     @klass.connection.select_columns_as_int_arrays(relation.arel.to_sql)
   end
 
-  # the first column should correspond to keys, and the second one - to values
-  def to_ids_hash(key_col, val_col)
-    keys, vals = to_columns_as_int_arrays(key_col, val_col)
-    hash = Hash.new
-    vals.each_with_index do |val, idx|
-      key = keys[idx].to_i
-      hash[key] ||= Array.new
-      hash[key] |= [val.to_i]
+  def to_int_groups(keys_column, values_column)
+    keys, values = to_columns_as_int_arrays(keys_column, values_column)
+    keys.zip(values).inject({}) do |hash, pair|
+      value = hash[pair.first]
+      if value
+        value << pair.last
+      else
+        hash[pair.first] = [pair.last]
+      end
+      hash
     end
-    hash.default = []
-    hash
   end
   
-  def to_ints_hash(keys_column, values_column)
+  def to_int_hash(keys_column, values_column)
     keys, values = to_columns_as_int_arrays(keys_column, values_column)
     Hash[keys.zip(values)]
   end

@@ -56,9 +56,9 @@ describe ColumnQueries::RealtionExtensions do
     end
   end
   
-  describe "to_ints_hash" do
+  describe "to_int_hash" do
     it "should work for scopes" do
-      prices = Book.scoped.to_ints_hash(:id, :price_cents)
+      prices = Book.scoped.to_int_hash(:id, :price_cents)
       prices.keys.should =~ @books.map(&:id)
       prices.values.should =~ @books.map {|b| b.price_cents.to_i}
       prices[@books[0].id].should == 495
@@ -66,18 +66,47 @@ describe ColumnQueries::RealtionExtensions do
     end
     
     it "should convert NULL values to 0s" do
-      prices = Book.scoped.to_ints_hash(:id, :price_cents)
+      prices = Book.scoped.to_int_hash(:id, :price_cents)
       prices[@books[3].id].should == 0
     end
     
     it "should work with named scopes" do
-      prices = Book.pricy.to_ints_hash(:id, :price_cents)
+      prices = Book.pricy.to_int_hash(:id, :price_cents)
       prices.should == {@books[2].id => 1999}
     end
   
     it "should work with dynamic scopes" do
-      prices = Book.scoped_by_price_cents(999).to_ints_hash(:id, :price_cents)
+      prices = Book.scoped_by_price_cents(999).to_int_hash(:id, :price_cents)
       prices.should == {@books[1].id => 999}
+    end
+  end
+  
+  describe "to_int_groups" do
+    before :each do
+      Comment.delete_all
+      @books.each do |book|
+        3.times { Comment.create!(:book => book, :body => 'Lorem Ipsum ' * 10) }
+      end
+    end
+    
+    it "should work for scopes" do
+      books_comments = Comment.scoped.to_int_groups(:book_id, :id)
+      books_comments.keys.should =~ @books.map(&:id)
+      @books.each do |book|
+        books_comments[book.id].should =~ book.comment_ids
+      end
+    end
+    
+    it "should work with named scopes" do
+      books_comments = Comment.for_pricy_books.to_int_groups(:book_id, :id)
+      books_comments.keys.should == [@books[2].id]
+      books_comments.values.first.should =~ @books[2].comment_ids
+    end
+    
+    it "should work with dynamic scopes" do
+      books_comments = Comment.where("book_id IN (SELECT id FROM books WHERE price_cents IS NULL)").to_int_groups(:book_id, :id)
+      books_comments.keys.should == [@books[3].id]
+      books_comments.values.first.should =~ @books[3].comment_ids
     end
   end
   
