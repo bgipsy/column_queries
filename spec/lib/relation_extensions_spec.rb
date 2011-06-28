@@ -16,7 +16,7 @@ describe ColumnQueries::RealtionExtensions do
       Book.scoped.to_int_array(:id).should == @books.map(&:id)
     end
   
-    it "should work with names scopes" do
+    it "should work with named scopes" do
       Book.pricy.to_int_array(:id).should == @books.select {|b| b.price_cents.to_i >= 1000}.map(&:id)
     end
   
@@ -37,7 +37,7 @@ describe ColumnQueries::RealtionExtensions do
       price_cents.should == @books.map {|b| b.price_cents.to_i}
     end
   
-    it "should work with names scopes" do
+    it "should work with named scopes" do
       ids, price_cents = Book.pricy.to_columns_as_int_arrays(:id, :price_cents)
       ids.should == @books.select {|b| b.price_cents.to_i >= 1000}.map(&:id)
       price_cents.should == [1999]
@@ -53,6 +53,31 @@ describe ColumnQueries::RealtionExtensions do
       ids, price_cents = Book.select([:id, :price_cents]).to_columns_as_int_arrays
       ids.should == @books.map(&:id)
       price_cents.should == @books.map {|b| b.price_cents.to_i}
+    end
+  end
+  
+  describe "to_ids_hash" do
+    it "should work for scopes" do
+      prices = Book.scoped.to_ids_hash(:id, :price_cents)
+      prices.keys.should =~ @books.map(&:id)
+      prices.values.should =~ @books.map {|b| [b.price_cents.to_i]}
+      prices[@books[0].id].should == [495]
+      prices[@books[1].id].should == [999]
+    end
+    
+    it "should convert NULL values to 0s" do
+      prices = Book.scoped.to_ids_hash(:id, :price_cents)
+      prices[@books[3].id].should == [0]
+    end
+    
+    it "should work with named scopes" do
+      prices = Book.pricy.to_ids_hash(:id, :price_cents)
+      prices.should == {@books[2].id => [1999]}
+    end
+  
+    it "should work with dynamic scopes" do
+      prices = Book.scoped_by_price_cents(999).to_ids_hash(:id, :price_cents)
+      prices.should == {@books[1].id => [999]}
     end
   end
   
