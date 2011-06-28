@@ -1,5 +1,8 @@
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
+
+Bundler.setup
+Bundler::GemHelper.install_tasks
 
 require 'active_record'
 require 'active_record/base'

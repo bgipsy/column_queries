@@ -1,6 +1,10 @@
+# -*- encoding: utf-8 -*-
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require "column_queries/version"
+
 Gem::Specification.new do |s|
   s.name        = "column_queries"
-  s.version     = "0.1.0"
+  s.version     = ColumnQueries::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Serge Balyuk"]
   s.email       = ["serge@complicated-simplicity.com"]
