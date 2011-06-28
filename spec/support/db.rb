@@ -26,14 +26,8 @@ class CreateTestSchema < ActiveRecord::Migration
   def self.up
     create_table :books do |t|
       t.string     :title
-      t.float      :price
+      t.integer    :price_cents
       t.text       :description
-      t.timestamps
-    end
-    
-    create_table :comments do |t|
-      t.references :book
-      t.text       :body
       t.timestamps
     end
   end
