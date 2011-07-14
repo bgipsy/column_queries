@@ -18,4 +18,12 @@ task :prepare_db do
   PostgresDatabase.prepare_database
 end
 
+task :benchmark => [:prepare_db] do
+  require './spec/support/db'
+  require './spec/support/models'
+  require './spec/support/benchmarks'
+  require 'column_queries'
+  Benchmarks.run
+end
+
 task :default => [:prepare_db, :spec]
