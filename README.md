@@ -6,7 +6,15 @@ When working with Rails back-end applications driven by rich business domains, a
 
 `ActiveRecord` connection adapter methods `select_values`, `select_all`, etc are usual answer to such need. However, if you happen to find yourself in an environment with PostgreSQL, Rails 3, and pg gem, there's better alternative. And you don't have to rewrite your scopes into raw SQL in order to use it.
 
-  TODO add benchmarks AR.find vs select_values vs column_values
+Here are some benchmarks obtained by spec/support/benchmarks.rb:
+
+  Test sample contains 20000 records
+  Benchmarking find
+  Time: 34.165s 0.6833s per run
+  Benchmarking select_values
+  Time: 3.686s 0.0737s per run
+  Benchmarking to_int_array
+  Time: 2.426s 0.0485s per run
 
 # Usage
 
